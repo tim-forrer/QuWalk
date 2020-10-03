@@ -1,1 +1,1 @@
-# A python package containing various constants that will help keep code tidier and save time on defining the same things over and over again.
+# A python module for use with my QuWalk code

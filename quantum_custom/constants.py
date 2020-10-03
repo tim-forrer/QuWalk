@@ -1,6 +1,6 @@
 import numpy as np
 
-#define spin up and spin down vectors
+#define spin up and spin down vectors as standard basis
 spin_up = np.array([1,0])
 spin_down = np.array([0,1])
 
