@@ -1,22 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import time
+from quantum_custom.constants import spin_down, spin_up, H00, H11, H
 
 #"coin flips"
 max_N = 100 #this will be the final number of coin flips
 positions = 2*max_N + 1
-
-#define spin up and spin down vectors
-spin_up = np.array([1,0])
-spin_down = np.array([0,1])
-
-#define our Hadamard operator, H, in terms of ith, jth entries, Hij
-H00 = np.outer(spin_up, spin_up)
-H01 = np.outer(spin_up, spin_down)
-H10 = np.outer(spin_down, spin_up)
-H11 = np.outer(spin_down, spin_down)
-H = (H00 + H01 + H10 - H11)/np.sqrt(2.0) #matrix representation of Hadamard gate in standard basis
 
 #initial conditions
 initial_spin = spin_down
@@ -70,12 +59,11 @@ def eye_kron(eye_dim, mat):
 
 
 #plot the graph
-fig = plt.figure()
-ax = fig.add_subplot(111)
+fig, ax = plt.subplots()
 plt.title("N = 0")
-
-line, = ax.plot([],[])
 x = np.arange(positions)
+line, = ax.plot([],[])
+
 loc = range(0, positions, positions // 10)
 plt.xticks(loc)
 plt.xlim(0, positions)
@@ -87,11 +75,10 @@ ax.set_ylabel("Probability")
 
 def init():
     line.set_data([],[])
-    return line
+    return line,
 
-def walker(N):
-    global x, current_state
-
+def update(N):
+    global current_state
     next_state = flip_once(current_state)
     probs = get_prob(next_state)
     current_state = next_state
@@ -104,5 +91,14 @@ def walker(N):
     plt.title(f"N = {N}")
     return line,
 
-anim = animation.FuncAnimation(fig, walker, init_func = init, frames = max_N + 1, interval = 20, repeat = False)
+anim = animation.FuncAnimation(
+    fig, 
+    update,
+    init_func = init,
+    frames = max_N + 1,
+    interval = 20,
+    repeat = False,
+    blit = False
+    )
+
 plt.show()
