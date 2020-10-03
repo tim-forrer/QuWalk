@@ -57,7 +57,7 @@ def eye_kron(eye_dim, mat): #to be used for the kronecker product of the identit
     result[0:mat_dim, 0:mat_dim] = mat
     result[mat_dim:result_dim, mat_dim:result_dim] = mat
     end = time.time()
-    print(end- start)
+    print(end - start)
     return result
 
 
@@ -81,27 +81,12 @@ def init():
 
 def walker(N):
     global x, current_state, max_N
-
     next_state = flip_once(current_state)
-
-
     prob = get_prob(next_state)
-
-
     current_state = next_state
-
-
     line.set_data(x, prob)
-
-
     plt.ylim((0, prob.max()))
-
-
     plt.title(f"N = {N}")
-
-
-
-
     return line,
 
 anim = animation.FuncAnimation(fig, walker, init_func = init, frames = max_N + 1, interval = 20, repeat = False)
