@@ -1,52 +1,50 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from quantum_custom.constants import spin_down, spin_up, H00, H11, H
+import quantum_custom.walk as walk
+
+class QuantumState:
+    def __init__(self, state):
+        self.state = state
 
 #"coin flips"
-N = 100
-positions = 2*N + 1
-
-#define spin up and spin down vectors
-spin_up = np.array([1,0])
-spin_down = np.array([0,1])
-
-#define our Hadamard operator, H, in terms of ith, jth entries, Hij
-H00 = np.outer(spin_up, spin_up)
-H01 = np.outer(spin_up, spin_down)
-H10 = np.outer(spin_down, spin_up)
-H11 = np.outer(spin_down, spin_down)
-H = (H00 + H01 + H10 - H11)/np.sqrt(2.0) #matrix representation of Hadamard gate in standard basis
+max_N = 100 #this will be the final number of coin flips
+positions = 2 * max_N + 1
 
 #initial conditions
-initial_spin = spin_up
+initial_spin = spin_down
 initial_position = np.zeros(positions)
-initial_position[N] = 1
-initial_state = np.kron(np.matmul(H, initial_spin), initial_position) #intial state is Hadamard acting on intial state, tensor product with the initial position
+initial_position[max_N] = 1
+initial_state = np.kron(np.matmul(H, initial_spin), initial_position) #initial state is Hadamard acting on intial state, tensor product with the initial position
+quantum_state = QuantumState(initial_state)
 
-#define operators
-shift_plus = np.roll(np.eye(positions), 1, axis = 0)
-shift_minus = np.roll(np.eye(positions), -1, axis = 0)
-step_operator = np.kron(H00, shift_plus) + np.kron(H11, shift_minus)
-walk_operator = step_operator.dot(np.kron(H, np.eye(positions)))
+#conduct walk
+for i in range(max_N + 1):
+    next_state = walk.flip_once(quantum_state.state, max_N)
+    quantum_state.state = next_state
 
-final_state = np.linalg.matrix_power(walk_operator, N).dot(initial_state)
+probs = walk.get_prob(quantum_state.state, max_N)
 
-#obtain the probabilities for each positions after N coin flips
-prob = np.empty(positions)
-for k in range(positions):
-    posn = np.zeros(positions)
-    posn[k] = 1     
-    measurement_k = np.kron(np.eye(2), np.outer(posn,posn)) #our measurement operator that measures at position k
-    proj = measurement_k.dot(final_state)
-    prob[k] = proj.dot(proj.conjugate()).real
+#create arrays to be plotted
+start_index = max_N % 2 + 1
+x = np.arange(positions)
+cleaned_x = x[start_index::2]
+cleaned_probs = probs[start_index::2]
 
 #plot the graph
-fig = plt.figure()
-ax = fig.add_subplot(111)
+fig, ax = plt.subplots()
+plt.title("N = 100")
+x = np.arange(positions)
+ax.plot(cleaned_x, cleaned_probs)
 
-plt.plot(np.arange(positions), prob)
 loc = range(0, positions, positions // 10)
 plt.xticks(loc)
 plt.xlim(0, positions)
-ax.set_xticklabels(range(-N, N+1, positions // 10))
+plt.ylim((0, cleaned_probs.max()))
+
+ax.set_xticklabels(range(-max_N, max_N + 1, positions // 10))
+ax.set_xlabel("x")
+ax.set_ylabel("Probability")
 
 plt.show()

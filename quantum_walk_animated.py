@@ -4,6 +4,10 @@ import matplotlib.animation as animation
 from quantum_custom.constants import spin_down, spin_up, H00, H11, H
 import quantum_custom.walk as walk
 
+class QuantumState:
+    def __init__(self, state):
+        self.state = state
+
 #"coin flips"
 max_N = 100 #this will be the final number of coin flips
 positions = 2*max_N + 1
@@ -12,9 +16,8 @@ positions = 2*max_N + 1
 initial_spin = spin_down
 initial_position = np.zeros(positions)
 initial_position[max_N] = 1
-initial_state = np.kron(np.matmul(H, initial_spin), initial_position) #intial state is Hadamard acting on intial state, tensor product with the initial position
-
-current_state = initial_state #this will save what state we currently have prepared
+initial_state = np.kron(np.matmul(H, initial_spin), initial_position) #initial state is Hadamard acting on intial state, tensor product with the initial position
+quantum_state = QuantumState(initial_state)
 
 #plot the graph
 fig, ax = plt.subplots()
@@ -36,27 +39,27 @@ def init():
     return line,
 
 def update(N):
-    global current_state
-    next_state = walk.flip_once(current_state, max_N)
+    next_state = walk.flip_once(quantum_state.state, max_N)
     probs = walk.get_prob(next_state, max_N)
-    current_state = next_state
-
+    quantum_state.state = next_state
     start_index = N % 2 + 1
     cleaned_probs = probs[start_index::2]
     cleaned_x = x[start_index::2]
     line.set_data(cleaned_x, cleaned_probs)
-    plt.ylim((0, cleaned_probs.max()))
+    if cleaned_probs.max() != 0:
+        plt.ylim((0, cleaned_probs.max()))
     plt.title(f"N = {N}")
     return line,
+
 
 anim = animation.FuncAnimation(
     fig, 
     update,
-    init_func = init,
     frames = max_N + 1,
+    init_func = init,
     interval = 20,
     repeat = False,
-    blit = False
+    blit = True,
     )
 
-plt.show()
+anim.save("animated.gif", writer = "ffmpeg", fps = 15)

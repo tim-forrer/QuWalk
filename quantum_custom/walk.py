@@ -20,7 +20,7 @@ def flip_once(state, max_N):
     next_state = walk_op.dot(state)
     return next_state
 
-def get_prob(state, max_N):
+def get_probs(state, max_N):
     """
     For the given state, calculates the probability of being in any possible position.
     Returns an array of probabilities.
