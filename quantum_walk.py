@@ -23,20 +23,14 @@ quantum_state = QuantumState(initial_state)
 walk_operator = walk.walk_operator(max_N)
 
 #conduct walk
-quantum_state.state = np.linalg.matrix_power(walk_operator, max_N).dot(quantum_state.state) #fudge
-
+quantum_state.state = np.linalg.matrix_power(walk_operator, max_N + 1).dot(quantum_state.state) #fudge
 probs = walk.get_probs(quantum_state.state, max_N)
 
 #create arrays to be plotted and remove 0 points
 x = np.arange(positions)
-cleaned_x = x[::2] #- 1 #fudge
-cleaned_probs = probs[::2]
-# for i, prob in enumerate(probs):
-#     if prob != 0:
-#         cleaned_x = np.append(cleaned_x, x[i])
-#         cleaned_probs = np.append(cleaned_probs, prob)
-print(cleaned_probs)
-print(cleaned_x)
+start_index = (max_N + 1) % 2
+cleaned_x = x[1::2] - 1
+cleaned_probs = probs[1::2]
 
 def classic_prob_m(m, N):
     """
@@ -62,14 +56,16 @@ for m in cleaned_x:
     classic_probs.append(classic_prob_m(m, max_N))
 cleaned_x += 100
 
-print(classic_probs[49:52])
-
 #plot the graph
 fig, ax = plt.subplots()
 plt.title("N = 100")
 x = np.arange(positions)
-ax.plot(cleaned_x, cleaned_probs, marker = "x", markersize = 5) #quantum walk data points
-ax.plot(cleaned_x, classic_probs, marker = "o", markersize = 2, lw = 0) 
+
+ax.plot(cleaned_x, cleaned_probs)
+ax.scatter(cleaned_x, cleaned_probs, s = 20, marker = "x", label = "Quantum Random Walk")
+ax.scatter(cleaned_x, classic_probs, s = 20, marker = "o", label = "Classical Random Walk")
+
+ax.legend()
 
 loc = range(0, positions, positions // 10)
 plt.xticks(loc)
@@ -79,7 +75,5 @@ plt.ylim((0, cleaned_probs.max()))
 ax.set_xticklabels(range(-max_N, max_N + 1, positions // 10))
 ax.set_xlabel("x")
 ax.set_ylabel("Probability")
-
-plt.grid(True)
 
 plt.show()

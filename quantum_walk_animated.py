@@ -40,7 +40,7 @@ def init():
 
 def update(N):
     next_state = walk.flip_once(quantum_state.state, max_N)
-    probs = walk.get_prob(next_state, max_N)
+    probs = walk.get_probs(next_state, max_N)
     quantum_state.state = next_state
     start_index = N % 2 + 1
     cleaned_probs = probs[start_index::2]
@@ -62,4 +62,4 @@ anim = animation.FuncAnimation(
     blit = True,
     )
 
-anim.save("animated.gif", writer = "ffmpeg", fps = 15)
+plt.show()
