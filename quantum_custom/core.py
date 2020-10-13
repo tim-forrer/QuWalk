@@ -1,5 +1,10 @@
 import numpy as np
 
+#Create the QuantumState class
+class QuantumState:
+    def __init__(self, state):
+        self.state = state
+
 #define spin up and spin down vectors as standard basis
 spin_up = np.array([1,0])
 spin_down = np.array([0,1])
