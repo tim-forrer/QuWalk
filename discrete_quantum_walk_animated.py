@@ -1,12 +1,11 @@
 import numpy as np
+import matplotlib
+matplotlib.use("tkagg")
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from quantum_custom.constants import spin_down, spin_up, H00, H11, H
-import quantum_custom.walk as walk
-
-class QuantumState:
-    def __init__(self, state):
-        self.state = state
+from quantum_custom.core import spin_down, spin_up, H00, H11, H, QuantumState
+import quantum_custom.walks.discrete as disc
+import math
 
 #"coin flips"
 max_N = 100 #this will be the final number of coin flips
@@ -39,15 +38,16 @@ def init():
     return line,
 
 def update(N):
-    next_state = walk.flip_once(quantum_state.state, max_N)
-    probs = walk.get_probs(next_state, max_N)
+    next_state = disc.flip_once(quantum_state.state, max_N)
+    probs = disc.prob(next_state, max_N)
     quantum_state.state = next_state
     start_index = N % 2 + 1
     cleaned_probs = probs[start_index::2]
     cleaned_x = x[start_index::2]
     line.set_data(cleaned_x, cleaned_probs)
-    if cleaned_probs.max() != 0:
-        plt.ylim((0, cleaned_probs.max()))
+    if cleaned_probs.max() != 0 and math.ceil(cleaned_probs.max() * 10) / 10 < ax.get_ylim()[1]:
+        new_lim = math.ceil(cleaned_probs.max() * 10) / 10
+        plt.ylim((0, new_lim))
     plt.title(f"N = {N}")
     return line,
 
@@ -59,7 +59,7 @@ anim = animation.FuncAnimation(
     init_func = init,
     interval = 20,
     repeat = False,
-    blit = True,
+    blit = False,
     )
 
 plt.show()
