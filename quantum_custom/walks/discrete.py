@@ -1,8 +1,8 @@
 import numpy as np
-from quantum_custom.core import H00, H11, H
+from quantum_custom.core import H00, H11, H, QuantumState, PlotData
 
 
-def walk_operator(max_N):
+def WalkOperator(max_N):
     """
     Returns the operator that causes the state to evolve discretely.
     """
@@ -50,3 +50,29 @@ def eye_kron(eye_dim, mat):
     result[0:mat_dim, 0:mat_dim] = mat
     result[mat_dim:result_dim, mat_dim:result_dim] = mat
     return result
+
+def pdf(x, N, spin0):
+    """
+    The probability distribution function of a Hadamard coined discrete quantum walk after N quantum coin flips.
+
+    Returns an PlotData() instance.
+
+    Removes zero probability positions.
+    """
+    positions = 2 * N + 1
+
+    #initial conditions
+    position0 = np.zeros(positions)
+    position0[N] = 1
+    state0 = np.kron(spin0, position0) #initial state in complete Hilbert space is initial spin tensor product with the initial position
+    quantum_state = QuantumState(state0)
+    walk_operator = WalkOperator(N)
+
+    #conduct walk
+    quantum_state.state = np.linalg.matrix_power(walk_operator, N).dot(quantum_state.state)
+    probs = prob(quantum_state.state, N)
+
+    x = x[0::2]
+    probs = probs[0::2]
+
+    return PlotData(x, probs, N)

@@ -5,7 +5,6 @@ from quantum_custom.core import spin_down, spin_up, H00, H11, H, QuantumState
 import quantum_custom.walks.discrete as disc
 import quantum_custom.walks.classical as classc
 import quantum_custom.walks.continuous as cont
-import quantum_custom.pdf as pdf
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -17,12 +16,13 @@ cont_N = 40 # Units of time for continous walk.
 
 # Create PlotData() instances to be plotted and remove 0 points.
 ## Discrete walk.
-x_disc = np.arange(-disc_N, disc_N)
-disc_walk = pdf.disc_pdf(x_disc, disc_N, spin0)
+x_disc = np.arange(-disc_N, disc_N + 1)
+disc_walk = disc.pdf(x_disc, disc_N, spin0)
+print(disc_walk.x[0:3])
 
 ## Continous walk.
-x_cont = np.arange(-disc_N, disc_N)
-cont_walk = pdf.cont_pdf(x_cont, cont_N)
+x_cont = np.arange(-disc_N, disc_N + 1)
+cont_walk = cont.pdf(x_cont, cont_N)
 
 # Plot graph.
 fig, ax = plt.subplots()

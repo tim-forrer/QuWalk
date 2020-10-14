@@ -13,7 +13,7 @@ spin0 = spin_down # Initial spin state for discrete quantum walk.
 # Create PlotData() instances to be plotted and remove 0 points.
 ## Discrete walk.
 x_disc = np.arange(-disc_N, disc_N  + 1)
-disc_walk = pdf.disc_pdf(x_disc, disc_N, spin0)
+disc_walk = disc.pdf(x_disc, disc_N, spin0)
 
 ## Classical walk.
 classc_walk = pdf.classc_pdf(x_disc, disc_N)

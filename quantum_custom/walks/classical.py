@@ -1,4 +1,5 @@
 from scipy.special import comb
+from quantum_custom.core import PlotData
 
 def prob(m, N):
     """
@@ -16,3 +17,17 @@ def prob(m, N):
 
     prob = comb(N, Nheads, exact = False) * (0.5)**N
     return prob
+
+def pdf(x, N):
+    """
+    The probability distribution function of a classical walk after N coin flips.
+
+    Returns an PlotData() instance.
+    """
+    probs = []
+    for x_val in x:
+        probs.append(prob(x_val, N))
+    start_index = N % 2
+    x = x[start_index::2]
+    probs = probs[start_index::2]
+    return PlotData(x, probs, N)
