@@ -13,7 +13,7 @@ import matplotlib.animation as animation
 disc_N = 55 # "Coin flips".
 spin0 = 1/(np.sqrt(2)) * (spin_down - 1j * spin_up) # Initial spin state for discrete quantum walk.
 
-cont_N = 40 # Units of time.
+cont_N = 40 # Units of time for continous walk.
 
 # Create PlotData() instances to be plotted and remove 0 points.
 ## Discrete walk.
@@ -29,8 +29,8 @@ fig, ax = plt.subplots()
 
 ax.plot(disc_walk.x, disc_walk.y)
 ax.plot(cont_walk.x, cont_walk.y)
-ax.scatter(disc_walk.x, disc_walk.y, s = 20, marker = "x", label = "Discrete Quantum Walk, 55 steps")
-ax.scatter(cont_walk.x, cont_walk.y, s = 40, marker = "1", label = "Cont. Quantum Walk, 40 steps")
+ax.scatter(disc_walk.x, disc_walk.y, s = 20, marker = "x", label = "Discrete Quantum Walk, 55 \"coin flips\".")
+ax.scatter(cont_walk.x, cont_walk.y, s = 40, marker = "1", label = "Cont. Quantum Walk, 40 time steps.")
 
 ax.legend()
 

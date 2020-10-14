@@ -1,9 +1,16 @@
 import numpy as np
 
-#Create the QuantumState class
+# Create the QuantumState class
 class QuantumState:
     def __init__(self, state):
         self.state = state
+
+# Define PlotData class
+class PlotData():
+    def __init__(self, x, y, N):
+        self.x = x
+        self.y = y
+        self.N = N
 
 #define spin up and spin down vectors as standard basis
 spin_up = np.array([1,0])

@@ -21,6 +21,13 @@ def classc_pdf(x, N):
 
     Returns an PlotData() instance.
     """
+    probs = []
+    for x_val in x:
+        probs.append(classc.prob(x_val, N))
+    start_index = N % 2
+    x = x[start_index::2]
+    probs = probs[start_index::2]
+    return PlotData(x, probs, N)
 
 
 def disc_pdf(x, N, spin0):
@@ -29,23 +36,24 @@ def disc_pdf(x, N, spin0):
 
     Returns an PlotData() instance.
 
-    Removes zero probability positions by default.
+    Removes zero probability positions.
     """
     positions = 2 * N + 1
 
     #initial conditions
     position0 = np.zeros(positions)
     position0[N] = 1
-    state0 = np.kron(np.matmul(H, spin0), position0) #initial state in complete Hilbert space is Hadamard acting on initial state, tensor product with the initial position
+    state0 = np.kron(spin0, position0) #initial state in complete Hilbert space is initial spin tensor product with the initial position
     quantum_state = QuantumState(state0)
     walk_operator = disc.walk_operator(N)
 
     #conduct walk
-    quantum_state.state = np.linalg.matrix_power(walk_operator, N + 1).dot(quantum_state.state) #fudge
+    quantum_state.state = np.linalg.matrix_power(walk_operator, N).dot(quantum_state.state)
     probs = disc.prob(quantum_state.state, N)
 
-    x = x[1::2]
-    probs = probs[1::2]
+    start_index = N % 2
+    x = x[start_index::2]
+    probs = probs[start_index::2]
 
     return PlotData(x, probs, N)
 

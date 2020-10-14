@@ -13,21 +13,21 @@ def walk_operator(max_N):
     return step_operator.dot(np.kron(H, np.eye(position_count)))
 
 
-def flip_once(state, max_N):
+def flip_once(state, N):
     """
     "Flips" the Hadamard coin once and acts on the given state appropriately.
     Returns the state after the Hadamard coin flip.
     """
-    walk_op = walk_operator(max_N)
+    walk_op = walk_operator(N)
     next_state = walk_op.dot(state)
     return next_state
 
-def prob(state, max_N):
+def prob(state, N):
     """
     For the given state, calculates the probability of being in any possible position.
     Returns an array of probabilities.
     """
-    position_count = 2 * max_N + 1
+    position_count = 2 * N + 1
     prob = np.empty(position_count)
     for k in range(position_count):
         posn = np.zeros(position_count)
