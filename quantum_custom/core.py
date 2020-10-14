@@ -13,12 +13,12 @@ class PlotData():
         self.N = N
 
 #define spin up and spin down vectors as standard basis
-spin_up = np.array([1,0])
-spin_down = np.array([0,1])
+SPIN_UP = np.array([1,0])
+SPIN_DOWN = np.array([0,1])
 
 #define our Hadamard operator, H, in terms of ith, jth entries, Hij
-H00 = np.outer(spin_up, spin_up)
-H01 = np.outer(spin_up, spin_down)
-H10 = np.outer(spin_down, spin_up)
-H11 = np.outer(spin_down, spin_down)
+H00 = np.outer(SPIN_UP, SPIN_UP)
+H01 = np.outer(SPIN_UP, SPIN_DOWN)
+H10 = np.outer(SPIN_DOWN, SPIN_UP)
+H11 = np.outer(SPIN_DOWN, SPIN_DOWN)
 H = (H00 + H01 + H10 - H11)/np.sqrt(2.0) #matrix representation of Hadamard gate in standard basis

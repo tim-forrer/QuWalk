@@ -18,7 +18,7 @@ def flip_once(state, N):
     "Flips" the Hadamard coin once and acts on the given state appropriately.
     Returns the state after the Hadamard coin flip.
     """
-    walk_op = walk_operator(N)
+    walk_op = WalkOperator(N)
     next_state = walk_op.dot(state)
     return next_state
 
