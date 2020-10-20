@@ -2,7 +2,7 @@ import numpy as np
 from quantum_custom.core import H00, H11, H, QuantumState, PlotData
 
 
-def WalkOperator(max_N):
+def walk_operator(max_N):
     """
     Returns the operator that causes the state to evolve discretely.
     """
@@ -18,8 +18,8 @@ def flip_once(state, N):
     "Flips" the Hadamard coin once and acts on the given state appropriately.
     Returns the state after the Hadamard coin flip.
     """
-    walk_op = WalkOperator(N)
-    next_state = walk_op.dot(state)
+    operator = walk_operator(N)
+    next_state = operator.dot(state)
     return next_state
 
 def prob(state, N):
@@ -64,12 +64,12 @@ def pdf(x, N, spin0):
     #initial conditions
     position0 = np.zeros(positions)
     position0[N] = 1
-    state0 = np.kron(spin0, position0) #initial state in complete Hilbert space is initial spin tensor product with the initial position
+    state0 = np.kron(spin0, position0) #initial state in complete Hilbert space is initial spin tensor product with the initial position.
     quantum_state = QuantumState(state0)
-    walk_operator = WalkOperator(N)
+    operator = walk_operator(N)
 
     #conduct walk
-    quantum_state.state = np.linalg.matrix_power(walk_operator, N).dot(quantum_state.state)
+    quantum_state.state = np.linalg.matrix_power(operator, N).dot(quantum_state.state)
     probs = prob(quantum_state.state, N)
 
     x = x[0::2]

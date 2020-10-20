@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Create the QuantumState class
 class QuantumState:
@@ -22,3 +23,22 @@ H01 = np.outer(SPIN_UP, SPIN_DOWN)
 H10 = np.outer(SPIN_DOWN, SPIN_UP)
 H11 = np.outer(SPIN_DOWN, SPIN_DOWN)
 H = (H00 + H01 + H10 - H11)/np.sqrt(2.0) #matrix representation of Hadamard gate in standard basis
+
+def plot(xs, ys, title, labels):
+    """
+    Plot x against y with given title and label.
+    """
+    _, ax = plt.subplots()
+
+    for i, x in enumerate(xs):
+        ax.scatter(x, ys[i], marker = "x")
+        ax.plot(x, ys[i], label = labels[i])
+
+    ax.legend()
+
+    plt.title(title)
+
+    ax.set_xlabel("x")
+    ax.set_ylabel("Probability")
+
+    plt.show()
