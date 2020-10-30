@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 # Create the QuantumState class
 class QuantumState:
@@ -22,9 +23,9 @@ H00 = np.outer(SPIN_UP, SPIN_UP)
 H01 = np.outer(SPIN_UP, SPIN_DOWN)
 H10 = np.outer(SPIN_DOWN, SPIN_UP)
 H11 = np.outer(SPIN_DOWN, SPIN_DOWN)
-H = (H00 + H01 + H10 - H11)/np.sqrt(2.0) #matrix representation of Hadamard gate in standard basis
+H = (H00 + H01 + H10 - H11)/np.sqrt(2.0) # Matrix representation of Hadamard gate in standard basis.
 
-def plot(xs, ys, title, labels):
+def plot(xs, ys, title, labels, axis_labels = ["x", "Probability"]):
     """
     Plot x against y with given title and label.
     """
@@ -38,7 +39,9 @@ def plot(xs, ys, title, labels):
 
     plt.title(title)
 
-    ax.set_xlabel("x")
-    ax.set_ylabel("Probability")
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True)) # Forces the x tick labels to be integer.
+
+    ax.set_xlabel(axis_labels[0])
+    ax.set_ylabel(axis_labels[1])
 
     plt.show()

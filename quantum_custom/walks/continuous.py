@@ -2,7 +2,7 @@ import numpy as np
 from scipy.linalg import expm
 from quantum_custom.core import PlotData
 
-def adj_mat(N, graph = "Z"):
+def adj_mat(n, graph = "Z"):
     """
     The adjacency matrix of the specified graph.
 
@@ -10,32 +10,33 @@ def adj_mat(N, graph = "Z"):
     """
     allowed_graphs = ["Z", "H"]
     if graph == "Z":
-        return z_adj(N)
+        return z_adj(n)
     elif graph == "H":
-        return hypercube_adj(N)
+        return hypercube_adj(n)
     else:
         raise ValueError(f"Invalid graph specified. Allowed values are {allowed_graphs}")
     return
 
-def z_adj(N):
+def z_adj(n):
     """
-    Adjacency matrix of the discrete number line, from -N to +N (inclusive).
+    Adjacency matrix of the discrete number line, from -n to +n (inclusive).
     """
-    mat = np.zeros((2 * N + 1, 2 * N + 1))
+    mat = np.zeros((2 * n + 1, 2 * n + 1))
     for i, row in enumerate(mat):
         if i > 0:
             row[i - 1] = 1
-        if i < 2 * N:
+        if i < 2 * n:
             row[i + 1] = 1
     return mat
 
-def hypercube_adj(N):
+def hypercube_adj(n):
     """
     Adjacency matrix of undirected hypercube of dimension N.
     """
-    mat = np.zeros((2**N, 2**N), dtype = int)
-    powers = [2**n for n in range(N)]
-    for i in range(2**N):
+    N = 2**n
+    mat = np.zeros((N, N), dtype = int)
+    powers = [2**i for i in range(n)]
+    for i in range(N):
         connected_verts = [i ^ y for y in powers] # Bitwise XOR i with all the "columns" (1, 2, 4, ...) to find connected vertices.
         for vert in connected_verts:
             mat[i][vert] = 1
@@ -78,6 +79,20 @@ def state_t(state_0, H, t):
 def H(A, gamma):
     """
     Hamiltonian of a graph with adjacency matrix A and hopping rate gamma.
+
+    To match common convention, gamma is divided by two.
     """
-    H = gamma * A
+    H = (gamma / 2) * A
     return H
+
+def search_H(n, target, gamma, graph):
+    """
+    The continuous time search Hamiltonian for the given graph, where a target vertex is marked as a lower energy state of the Hamiltonian.
+    """
+    N = 2**n
+    a_mat = adj_mat(n, graph = graph)
+    base_hamil = H(a_mat, gamma)
+    walk_hamil = (gamma / 2) * n * np.identity(N) - base_hamil
+    prob_hamil = np.identity(N) - np.outer(target, target)
+    search_hamil = walk_hamil + prob_hamil
+    return search_hamil

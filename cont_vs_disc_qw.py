@@ -26,3 +26,6 @@ ys = [prob_amps, disc_walk.y]
 labels = ["Cont. Time QW (t = 40)", r"Disc. Time QW (N = 55), $|spin_0\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle$)"]
 
 plot(xs, ys, title = "Comparison of discrete and continuous time QW.", labels = labels)
+
+print(f"The sum of the probability amplitudes for the discrete time walk is {sum(disc_walk.y)}.")
+print(f"The sum of the probability amplitudes for the continuous time walk is {sum(prob_amps)}.")
