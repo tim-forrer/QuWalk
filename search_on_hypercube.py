@@ -3,11 +3,12 @@ import quantum_custom.walks.continuous as cont
 import quantum_custom.core as core
 from collections import defaultdict
 from scipy.special import comb
+from scipy.optimize import fmin
 import time
 
-def prob_success(n):
+def prob_success(t, n):
     """
-    For n qubits, gives the peak probability of search success.
+    For n qubits, gives the peak probability of search success at time t.
     """
     N = 2**n
 
@@ -24,18 +25,21 @@ def prob_success(n):
     qws_H = cont.search_H(n, target_state, gamma, "H") # QWS Hamiltonian on hypercube of dimension N with target_state = |target_vertex>.
 
     # Perform search.
-    t = np.sqrt(N) * 0.5 * np.pi # Time for first maximum overlap
+    
     statet = cont.state_t(state0, qws_H, t)
     probs = cont.measure(statet)
-    if 0.9999 <= sum(probs) <= 1.0001: 
-        return max(probs)
-    else:
-        print("error")
-        return
+    return max(probs)
 
-x = np.arange(1, 13)
+max_n = 10
+
+x_arr = np.arange(1, max_n + 1)
 probs = []
-for n in x:
-    probs.append(prob_success(n))
+for n in x_arr:
+    N = 2**n
 
-core.plot([x], [probs], "QWS on Hypercube", labels = ["QWS"])
+    t_guess = (np.pi / 2) * np.sqrt(N)
+
+    _, max_prob, _, _, _ = fmin(lambda t: -prob_success(t, n), t_guess, full_output=True)
+    probs.append(-max_prob)
+
+core.plot([x_arr], [probs], title = "Peak Probability of Success against qubit number", labels = [], axis_labels = ["Number of Qubits", r"$P_{peak}$"])
