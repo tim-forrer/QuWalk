@@ -13,42 +13,65 @@ def walk_operator(max_N):
 
     Returns
     -------
-    step_operator : numpy.ndarray
+    walk_op : numpy.ndarray
         The matrix representation of the walk operator.
     """
     position_count = 2 * max_N + 1
     shift_plus = np.roll(np.eye(position_count), 1, axis = 0)
     shift_minus = np.roll(np.eye(position_count), -1, axis = 0)
     step_operator = np.kron(H00, shift_plus) + np.kron(H11, shift_minus)
-    return step_operator.dot(np.kron(H, np.eye(position_count)))
+    walk_op = step_operator.dot(np.kron(H, np.eye(position_count)))
+    return walk_op
 
 
-def flip_once(state, N):
+def time_step(state0, N):
     """
-    "Flips" the Hadamard coin once and acts on the given state appropriately.
-    Returns the state after the Hadamard coin flip.
+    Increments a discrete quantum walk by a singular time step.
+
+    Parameters
+    ----------
+    state0 : QuantumState
+        The input state that is to be incremented upon once.
+    N : int
+        The maximum number of steps that will be taken on the quantum walk.
+    
+    Returns
+    -------
+    statef : QuantumState
+        The result state having incremented the quantum state.
     """
     operator = walk_operator(N)
-    next_state = operator.dot(state)
-    return next_state
+    statef = QuantumState(operator.dot(state0.state), H_space_dims = state0.state)
+    return statef
 
 def prob(state, N):
     """
-    For the given state, calculates the probability of being in any possible position.
-    Returns an array of probabilities.
+    Calculate the probability of being in each position.
+    
+    Parameters
+    ----------
+    state : QuantumState
+        The state which is a superposition of many probabilities.
+    N : int
+        The number of time steps the state has been evolved by.
+
+    Returns
+    -------
+    probs : numpy.ndarray
+        An array of probabilities, with index position corresponding to the probability of being in that position. Index position 0 representing position -N.
     """
     position_count = 2 * N + 1
-    prob = np.empty(position_count)
+    probs = np.empty(position_count)
     for k in range(position_count):
         posn = np.zeros(position_count)
         posn[k] = 1
         posn_outer = np.outer(posn, posn)
         alt_measurement_k = eye_kron(2, posn_outer)
         proj = alt_measurement_k.dot(state)
-        prob[k] = proj.dot(proj.conjugate()).real       
-    return prob
+        probs[k] = proj.dot(proj.conjugate()).real       
+    return probs
 
-def eye_kron(eye_dim, mat, reverse = False):
+def eye_kron(eye_dim, mat):
     """
     Calculates the tensor product of the identity matrix with a matrix (in that order).
     This exploits the fact that majority of values in the resulting matrix will be zeroes apart from on the leading diagonal where we simply have copies of the given matrix.
@@ -59,8 +82,6 @@ def eye_kron(eye_dim, mat, reverse = False):
         The dimension of the identity matrix for this tensor product.
     mat : numpy.ndarray
         The matrix which is to be tensored with the identity.
-    reverse : bool
-        Currently doesn't do anything. Future implementation will hopefully allow for the tensor product of M x I to be calculated efficiently by changing this parameter to True.
 
     Returns
     -------
@@ -70,30 +91,51 @@ def eye_kron(eye_dim, mat, reverse = False):
     mat_dim = len(mat)
     result_dim = eye_dim * mat_dim # Dimension of the resulting matrix
     result = np.zeros((result_dim, result_dim))
-    if reverse:
-        pass # Awaiting implementation of reverse ordering.
-    else:
-        result[0:mat_dim, 0:mat_dim] = mat
-        result[mat_dim:result_dim, mat_dim:result_dim] = mat
+    index_partitions = [i for i in np.arange(0, result_dim + 1, mat_dim)]
+    for i in range(len(index_partitions) - 1):
+        result[index_partitions[i]:index_partitions[i + 1], index_partitions[i]:index_partitions[i + 1]] = mat
     return result
 
 def state0(spin0, N):
     """
-    Initial coin and walker state (tensored in that order), where walker starts from origin.
+    Initial coin and walker state (tensored in that order), where the walker starts from origin.
 
-    Returns QuantumState() instance
+    Parameters
+    ----------
+    spin0 : numpy.ndarray
+        The initial spin of the state.
+    N : int
+        The maximum number of time steps that the state will be evolved by.
+
+    Returns
+    -------
+    state0 : QuantumState
+        The initial QuantumState corresponding to the input parameters. Starts from the origin.
     """
     positions = 2 * N + 1
     position0 = np.zeros(positions)
     position0[N] = 1
-
-    return QuantumState(np.kron(spin0, position0))
+    state0 = QuantumState(np.kron(spin0, position0))
+    return state0
 
 def stateN(state0, operator, N):
     """
-    Acts the operator N times on the initial state.
+    Acts a given operator on a quantum state N times.
+
+    Parameters
+    ----------
+    state0 : QuantumState
+        The initial state that is to be acted upon.
+    Operator : numpy.ndarray
+        The operator to act upon the given initial state.
+    
+    Returns
+    -------
+    statef : QuantumState
+        The result of acting the operator on the initial state N times.
     """
-    return np.linalg.matrix_power(operator, N).dot(state0.state)
+    statef = QuantumState(np.linalg.matrix_power(operator, N).dot(state0.state), H_space_dims = state0.H_space_dims)
+    return statef
 
 
 def pdf(x, N, spin0):

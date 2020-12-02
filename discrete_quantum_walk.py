@@ -18,8 +18,10 @@ disc_walk = disc.pdf(x_disc, disc_N, spin0)
 classc_walk = classc.pdf(x_disc, disc_N)
 
 # Plot the graph
-xs = [disc_walk.x, classc_walk.x]
-ys = [disc_walk.y, classc_walk.y]
-labels = [r"Disc. QW, $|\psi_0\rangle = |1\rangle$", "Classical QW"]
-title = "Comparison of discrete quantum walk and classical quantum walk at N = 100."
+# xs = [disc_walk.x, classc_walk.x]
+# ys = [disc_walk.y, classc_walk.y]
+xs = [classc_walk.x]
+ys = [classc_walk.y]
+labels = ["Classical Random Walk"]
+title = "Probability Distribution of a Random Walk after 100 coin flips."
 plot(xs, ys, labels = labels, title = title)

@@ -25,7 +25,7 @@ def entanglement(matrix, base = e):
     eigenvals = la.eig(matrix)[0].real
     entang = 0
     for eigenval in eigenvals:
-        if eigenval == 0:
+        if eigenval < 10**-15: # Sometimes eigenvalues that should be zero come out as negative (eigenvalues of density matrices are non-negative). Fixes this. Also skips over eigenvalues that are 0.
             continue
         entang += -eigenval * log(eigenval) / log(base)
     return entang
@@ -53,7 +53,8 @@ def partial_trace(matrix, dims, trace_over):
     resultant_space_dim = 1
     for i in result.shape[:len(result.shape) // 2]:
         resultant_space_dim *= i
-    return result.reshape(resultant_space_dim, resultant_space_dim)
+    result = result.reshape(resultant_space_dim, resultant_space_dim)
+    return result
 
 spin0 = core.SPIN_UP
 
@@ -66,7 +67,7 @@ for N in x:
     statef = np.linalg.matrix_power(walk_operator, N).dot(state0.state)
 
     state = core.QuantumState(statef, (2, 2 * N + 1))
-    rho = partial_trace(state.projector, state.H_space_dims, 1)
+    rho = partial_trace(state.projector, state.H_space_dims, 0)
     y.append(entanglement(rho, base = 2))
 
 core.plot([x], [y], "Entanglement evolution of Discrete Quantum Walk", [], axis_labels=["Time Steps", "Entanglement"])
