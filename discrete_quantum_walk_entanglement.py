@@ -56,8 +56,8 @@ def partial_trace(matrix, dims, trace_over):
     result = result.reshape(resultant_space_dim, resultant_space_dim)
     return result
 
-spin0 = core.SPIN_UP
-
+#spin0 = core.SPIN_UP
+spin0 = np.array([1,0])
 x = np.arange(1, 100)
 y = []
 for N in x:
@@ -67,7 +67,7 @@ for N in x:
     statef = np.linalg.matrix_power(walk_operator, N).dot(state0.state)
 
     state = core.QuantumState(statef, (2, 2 * N + 1))
-    rho = partial_trace(state.projector, state.H_space_dims, 0)
+    rho = partial_trace(state.rho, state.H_space_dims, 0)
     y.append(entanglement(rho, base = 2))
 
 core.plot([x], [y], "Entanglement evolution of Discrete Quantum Walk", [], axis_labels=["Time Steps", "Entanglement"])
