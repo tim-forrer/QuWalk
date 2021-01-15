@@ -56,7 +56,7 @@ def partial_trace(matrix, dims, trace_over):
     result = result.reshape(resultant_space_dim, resultant_space_dim)
     return result
 
-#spin0 = core.SPIN_UP
+spin0 = core.SPIN_UP
 spin0 = np.array([1,0])
 x = np.arange(1, 100)
 y = []

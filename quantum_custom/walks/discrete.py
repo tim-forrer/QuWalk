@@ -63,12 +63,13 @@ def prob(state, N):
     position_count = 2 * N + 1
     probs = np.empty(position_count)
     for k in range(position_count):
-        posn = np.zeros(position_count)
+        posn = np.zeros((position_count, 1))
         posn[k] = 1
         posn_outer = np.outer(posn, posn)
-        alt_measurement_k = eye_kron(2, posn_outer)
-        proj = alt_measurement_k.dot(state)
-        probs[k] = proj.dot(proj.conjugate()).real       
+        measurement_k = np.kron(np.identity(2), posn_outer)
+        proj = measurement_k.dot(state)
+        prob = proj.T.dot(proj.conjugate())[0][0].real
+        probs[k] = prob
     return probs
 
 def eye_kron(eye_dim, mat):
@@ -149,7 +150,7 @@ def pdf(x, N, spin0):
     positions = 2 * N + 1
 
     #initial conditions
-    position0 = np.zeros(positions)
+    position0 = np.zeros((positions, 1))
     position0[N] = 1
     state0 = np.kron(spin0, position0) #initial state in complete Hilbert space is initial spin tensor product with the initial position.
     quantum_state = QuantumState(state0)

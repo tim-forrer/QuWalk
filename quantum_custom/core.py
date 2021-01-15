@@ -222,7 +222,7 @@ def partial_transpose(matrix, dims, transpose):
     tensor = matrix.reshape(dims + dims) # Reshape the matrix into a tensor with indices representing each constituent subspace.
 
     # Create a list of the axes indices and swap the indices of the axes corresponding to the subspace we want to transpose.
-    axes = list(len(tensor.shape))
+    axes = list(range(len(tensor.shape)))
     axes[transpose], axes[transpose + n_subspaces] = axes[transpose + n_subspaces], axes[transpose]
 
     result = np.transpose(tensor, axes = axes)
